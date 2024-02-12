@@ -1,0 +1,132 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class Main{
+    private static Map&lt;String, Double&gt; itemPrices = new HashMap&lt;&gt;();
+    private static Map&lt;String, Integer&gt; inventory = new HashMap&lt;&gt;();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println(&quot;-------------------------------------------&quot;+&quot;\nInventory Management
+System&quot;);
+            System.out.println(&quot;1. Add Item&quot;);
+            System.out.println(&quot;2. Remove Item&quot;);
+            System.out.println(&quot;3. Purchase Item&quot;);
+            System.out.println(&quot;4. View Inventory&quot;);
+            System.out.println(&quot;5. Exit&quot;+&quot;\n-------------------------------------------------------------&quot;);
+            System.out.print(&quot;Enter your choice: &quot;);
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addItem(scanner);
+                    break;
+                case 2:
+                    removeItem(scanner);
+                    break;
+                case 3:
+
+                    purchaseItem(scanner);
+                    break;
+                case 4:
+                    viewInventory();
+                    break;
+                case 5:
+                    System.out.println(&quot;Exiting the system. Goodbye!&quot;);
+                    System.exit(0);
+                default:
+                    System.out.println(&quot;Invalid choice. Please enter a valid option.&quot;);
+            }
+        }
+    }
+
+    private static void addItem(Scanner scanner) {
+        System.out.print(&quot;Enter the item name: &quot;);
+        String itemName = scanner.next();
+
+        System.out.print(&quot;Enter the quantity: &quot;);
+        int quantity = scanner.nextInt();
+
+        System.out.print(&quot;Enter the price per unit: &quot;);
+        double pricePerUnit = scanner.nextDouble();
+
+        if (inventory.containsKey(itemName)) {
+            inventory.put(itemName, inventory.get(itemName) + quantity);
+        } else {
+            inventory.put(itemName, quantity);
+            itemPrices.put(itemName, pricePerUnit);
+        }
+
+        System.out.println(&quot;Item added successfully.&quot;);
+    }
+
+    private static void removeItem(Scanner scanner) {
+        System.out.print(&quot;Enter the item name: &quot;);
+        String itemName = scanner.next();
+
+        if (inventory.containsKey(itemName)) {
+            System.out.print(&quot;Enter the quantity to remove: &quot;);
+            int quantityToRemove = scanner.nextInt();
+
+            int currentQuantity = inventory.get(itemName);
+            if (quantityToRemove &lt;= currentQuantity) {
+                inventory.put(itemName, currentQuantity - quantityToRemove);
+                System.out.println(&quot;Item removed successfully.&quot;);
+            } else {
+                System.out.println(&quot;Insufficient quantity to remove.&quot;);
+            }
+        } else {
+            System.out.println(&quot;Item not found in inventory.&quot;);
+        }
+    }
+
+    private static void purchaseItem(Scanner scanner) {
+        System.out.print(&quot;Enter the item name: &quot;);
+        String itemName = scanner.next();
+
+        if (inventory.containsKey(itemName)) {
+            System.out.print(&quot;Enter the quantity to purchase: &quot;);
+            int quantityToPurchase = scanner.nextInt();
+
+            int currentQuantity = inventory.get(itemName);
+            double pricePerUnit = itemPrices.get(itemName);
+
+            if (quantityToPurchase &lt;= currentQuantity) {
+                double totalPrice = quantityToPurchase * pricePerUnit;
+                System.out.println(&quot;Total Price: &quot; + totalPrice);
+
+                // Update the inventory after purchase
+                inventory.put(itemName, currentQuantity - quantityToPurchase);
+
+                System.out.println(&quot;Item purchased successfully.&quot;);
+            } else {
+                System.out.println(&quot;Insufficient quantity in inventory.&quot;);
+            }
+        } else {
+            System.out.println(&quot;Item not found in inventory.&quot;);
+        }
+    }
+
+    private static void viewInventory() {
+        System.out.println(&quot;Inventory:&quot;);
+        double totalAmount = 0.0;
+
+        for (Map.Entry&lt;String, Integer&gt; entry : inventory.entrySet()) {
+            String itemName = entry.getKey();
+            int quantity = entry.getValue();
+            double pricePerUnit = itemPrices.get(itemName);
+            double totalPrice = quantity * pricePerUnit;
+
+            totalAmount += totalPrice;
+
+            System.out.println(itemName + &quot;: Quantity=&quot; + quantity + &quot;, Price per unit=+&quot; +
+pricePerUnit + &quot;, Total Price=&quot; + totalPrice);
+        }
+
+        System.out.println(&quot;Total Inventory Value: &quot; + totalAmount);
+    }
+}
